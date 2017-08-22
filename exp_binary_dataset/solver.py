@@ -28,7 +28,7 @@ model = None
 size = None
 
 
-n_random_constraints_val = 50
+n_random_constraints_val = 15
 
 def save_object(obj, filename):
     with open(filename, 'wb') as f:
@@ -388,7 +388,7 @@ class Solver:
                         if size=='large':
                             n_epochs_btw_validation = self.config.timeslice_size
                         elif size=='small':
-                            n_epochs_btw_validation = self.config.timeslice_size/2
+                            n_epochs_btw_validation = self.config.timeslice_size/10
                         else:
                             raise ValueError('invalid size of dataset: small or large ')
 
