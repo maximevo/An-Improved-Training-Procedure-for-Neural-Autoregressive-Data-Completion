@@ -416,7 +416,7 @@ class Solver:
                 output_pd['best_val_epoch'] = best_val_epoch
 
                 # --- Writing to csv ---
-                pathfile = self.config.path_csv_results + 'xp.csv'
+                pathfile = os.path.join( self.config.path_csv_results, 'xp.csv')
                 header_boolean = not(os.path.isfile(pathfile))
                 with open(pathfile, 'a') as f:
                         output_pd.to_csv(f, header=header_boolean,index=False)
