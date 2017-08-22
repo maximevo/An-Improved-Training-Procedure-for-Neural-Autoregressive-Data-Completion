@@ -6,6 +6,22 @@ import time
 import os
 import pandas as pd
 
+# tport prepro of log path
+from tensorport import get_logs_path
+
+flags = tf.app.flags
+FLAGS = flags.FLAGS
+
+dir_path = os.path.join( os.path.dirname( ( os.path.dirname( os.path.dirname( os.path.abspath(__file__) ) ) )) , 'results_experiments')
+PATH_TO_LOCAL_LOGS = os.path.expanduser(dir_path)
+
+flags.DEFINE_string("logs_dir",
+                    get_logs_path(root=PATH_TO_LOCAL_LOGS),
+                    "Path to store logs and checkpoints. It is recommended"
+                    "to use get_logs_path() to define your logs directory."
+                    "If you set your logs directory manually make sure"
+                    "to use /logs/ when running on TensorPort cloud.")
+print('FLAGS.logs_dir',FLAGS.logs_dir)
 
 scenario = None
 model = None
@@ -440,28 +456,32 @@ class Solver:
 
                 # Path where model will be saved
 
-                dir_path = os.path.join( os.path.dirname( ( os.path.dirname( os.path.dirname( os.path.abspath(__file__) ) ) )) , 'results_experiments')
+
                 
-                log_dir = os.path.join(*[dir_path,  size , dataset, model, scenario, id_experiment, 'model_saved'])
-                summary_dir = os.path.join(*[dir_path,  size , dataset, model, scenario, id_experiment, 'summary'])
-                path_plots_results = os.path.join(*[dir_path,  size , dataset, model, scenario, id_experiment, 'plots'])
+                log_dir = os.path.join(*[FLAGS.logs_dir,  size , dataset, model, scenario, id_experiment, 'model_saved'])
+                summary_dir = os.path.join(*[FLAGS.logs_dir,  size , dataset, model, scenario, id_experiment, 'summary'])
+                path_plots_results = os.path.join(*[FLAGS.logs_dir,  size , dataset, model, scenario, id_experiment, 'plots'])
+                path_csv_results = os.path.join(FLAGS.logs_dir,'xp')
+
 
                 print('log_dir',log_dir)
                 print('summary_dir',summary_dir)
                 print('path_plots_results',path_plots_results)
-                
+                print('path_csv_results',path_csv_results)
+
                 if not os.path.exists(log_dir):
                         os.makedirs(log_dir)
                 if not os.path.exists(summary_dir):
                         os.makedirs(summary_dir)
                 if not os.path.exists(path_plots_results):
                         os.makedirs(path_plots_results)
-                if not os.path.exists(self.config.path_csv_results):
-                        os.makedirs(self.config.path_csv_results)
+                if not os.path.exists(path_csv_results):
+                        os.makedirs(path_csv_results)
 
                 self.config.log_dir = log_dir
                 self.config.summary_dir = summary_dir
                 self.config.path_plots_results = path_plots_results
+                self.config.path_csv_results = path_csv_results
 
                 global_step = tf.Variable(0, trainable=False)
 

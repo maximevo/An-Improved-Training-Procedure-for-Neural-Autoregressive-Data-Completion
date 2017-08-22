@@ -37,12 +37,12 @@ class Config:
 		# Saving parameters
 		self.id_exp = None
 		self.log_dir = None
+		self.path_csv_results = None
 		self.path_plots_results = None
 		self.save_model_secs = 30000000000000000000
 		self.summary_dir = None
 		self.summary_frequency = 20
 		self.path_to_saved_model = path_to_saved_model
-		self.path_csv_results = os.path.join(  os.path.dirname(( os.path.dirname( os.path.abspath(__file__) ) ) ) , os.path.join('results_experiments','xp'))
 
 
 
