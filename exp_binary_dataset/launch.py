@@ -5,7 +5,7 @@ Keywords can control: small dataset or large dataset, scenario 1,2,3 or 4, model
 
 import sys, os
 
-my_path = os.path.dirname(os.path.dirname( os.path.abspath(__file__) ))
+my_path = os.path.dirname( os.path.abspath(__file__) )
 root = os.path.dirname(os.path.dirname( os.path.abspath(__file__) ))
 
 print('my_path',my_path)
