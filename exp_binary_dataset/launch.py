@@ -39,7 +39,7 @@ dataset_nips = 'nips'
 # ======== EXPERIMENTS TO LAUNCH =============
 
 batch_size = 128
-n_epochs = 1
+n_epochs = 5000
 initial_learning_rate_1 = 0.1
 initial_learning_rate_2 = 0.05
 initial_learning_rate_3 = 0.01
