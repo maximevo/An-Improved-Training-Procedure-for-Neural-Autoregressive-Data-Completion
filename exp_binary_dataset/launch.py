@@ -39,7 +39,7 @@ dataset_nips = 'nips'
 # ======== EXPERIMENTS TO LAUNCH =============
 
 batch_size = 128
-n_epochs = 5000
+n_epochs = 2000
 initial_learning_rate_1 = 0.1
 initial_learning_rate_2 = 0.05
 initial_learning_rate_3 = 0.01
@@ -91,10 +91,10 @@ size_datasets = ['small']
 models = ['model_1','model_3']
 
 #dataset_list = [dataset_adult, dataset_dna, dataset_mushrooms, dataset_nips]
-dataset_list = [dataset_adult]
+dataset_list = [dataset_dna]
 
 #scenarios = ['scenario_1','scenario_2','scenario_3']
-scenarios = ['scenario_1','scenario_3']
+scenarios = ['scenario_1']
 
 xp_to_launch = []
 
