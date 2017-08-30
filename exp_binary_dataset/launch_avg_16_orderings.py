@@ -82,19 +82,19 @@ config_11 = Config(batch_size=batch_size,n_epochs=n_epochs,initial_learning_rate
 
 
 #config_list = [config_1,config_2,config_3,config_4,config_5,config_6,config_7,config_8,config_9,config_10,config_11]
-config_list = [config_6]
+config_list = [config_3,config_4,config_5,config_6]
 
 #size_datasets = ['small','large']
-size_datasets = ['small']
+size_datasets = ['large']
 
 #models = ['model_1','model_3']
-models = ['model_1']
+models = ['model_1','model_3']
 
 #dataset_list = [dataset_adult, dataset_dna, dataset_mushrooms, dataset_nips]
-dataset_list = [dataset_adult,dataset_mushrooms]
+dataset_list = [dataset_adult]
 
 #scenarios = ['scenario_1','scenario_2','scenario_3']
-scenarios = ['scenario_2']
+scenarios = ['scenario_1','scenario_2','scenario_3']
 
 
 

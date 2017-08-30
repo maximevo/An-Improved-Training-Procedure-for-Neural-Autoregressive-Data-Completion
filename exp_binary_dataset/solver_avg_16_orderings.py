@@ -13,7 +13,7 @@ from tensorport import get_logs_path
 flags = tf.app.flags
 FLAGS = flags.FLAGS
 
-dir_path = os.path.join( os.path.dirname( ( os.path.dirname( os.path.dirname( os.path.abspath(__file__) ) ) )) , 'results_experiments_choice_ordering')
+dir_path = os.path.join( os.path.dirname( ( os.path.dirname( os.path.dirname( os.path.abspath(__file__) ) ) )) , 'results_experiments_avg_16_ordering')
 PATH_TO_LOCAL_LOGS = os.path.expanduser(dir_path)
 
 flags.DEFINE_string("logs_dir",
