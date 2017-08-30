@@ -498,9 +498,9 @@ class Solver:
 
 
                 
-                log_dir = os.path.join(*[FLAGS.logs_dir,  size , dataset, model, scenario, id_experiment, 'model_saved'])
-                summary_dir = os.path.join(*[FLAGS.logs_dir,  size , dataset, model, scenario, id_experiment, 'summary'])
-                path_plots_results = os.path.join(*[FLAGS.logs_dir,  size , dataset, model, scenario, id_experiment, 'plots'])
+                log_dir = os.path.join(*[FLAGS.logs_dir,  size , dataset, model, scenario,ordering, id_experiment, 'model_saved'])
+                summary_dir = os.path.join(*[FLAGS.logs_dir,  size , dataset, model, scenario, ordering,id_experiment, 'summary'])
+                path_plots_results = os.path.join(*[FLAGS.logs_dir,  size , dataset, model, scenario, ordering,id_experiment, 'plots'])
                 path_csv_results = os.path.join(FLAGS.logs_dir,'xp')
 
 
