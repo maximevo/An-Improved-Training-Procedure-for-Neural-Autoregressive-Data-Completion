@@ -104,7 +104,7 @@ def load_data(dataset_name):
 
 
 
-dirfile = './../../results_experiments/test/'
+dirfile = './../../results_experiments_avg_16_orderings/test/'
 
 if not os.path.exists(dirfile):
     os.makedirs(dirfile)
@@ -350,8 +350,7 @@ for (path_to_restore,model,dataset,scenario) in xp_to_launch:
                             if len(set(constraint))==0:
                                 temp_custom_ordering = np.array(unknown_notes) 
                             else: 
-                                constraint = np.sort(constraint)
-                                temp_custom_ordering = np.concatenate( [constraint , unknown_notes] ) 
+                                temp_custom_ordering = np.concatenate( [constraint_sorted , unknown_notes_sorted] ) 
 
                             total_loss_test_normalized = 0
 
@@ -387,7 +386,7 @@ for (path_to_restore,model,dataset,scenario) in xp_to_launch:
                                 total_loss_test_ =  float(total_loss_test_)/total_actual_batch_size_test
                                 total_loss_test_normalized += total_loss_test_
 
-                                losses_test[constraint_id*timeslice_size+index] = total_loss_test_
+                                losses_test[constraint_id*timeslice_size+index] += total_loss_test_
   
                             # this is the avg loss per 1D conditional (we normalized by the nb of 1D conditionals involved in the conditional completion) -> this is the metric that matters for train, validation, test 
                             total_loss_test_normalized = float(total_loss_test_normalized)/(timeslice_size-n_known)
