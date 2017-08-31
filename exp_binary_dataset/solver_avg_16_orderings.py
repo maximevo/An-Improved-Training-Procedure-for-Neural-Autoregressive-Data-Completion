@@ -29,7 +29,7 @@ model = None
 size = None
 
 # ONLY 4 VLIDATION CONSTRAINTS, BECAUSE WE COMPUTE AVERAGE OVER 16 ORDERINGS
-n_random_constraints_val = 4
+n_random_constraints_val = 15
 
 def save_object(obj, filename):
     with open(filename, 'wb') as f:
@@ -342,7 +342,7 @@ class Solver:
                                     lower = non_ordered[:,:d]
                                     upper = non_ordered[:,d:]
                                     
-                                    j = random.randint(0,15)
+                                    j = np.random.randint(16)
                                     mp = mp_16[j]
                                     
                                     lower_2 = mp[lower]
