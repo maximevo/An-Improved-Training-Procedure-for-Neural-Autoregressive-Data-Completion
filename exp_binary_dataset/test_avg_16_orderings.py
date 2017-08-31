@@ -16,28 +16,20 @@ xp_to_launch = []
 
 xp_to_launch = [
    
-('/home/maximev/results_experiments_avg_16_ordering/large/adult/model_1/scenario_1/150411199818/model_saved','model_1', 'adult', 'scenario_1'),
-    ('/home/maximev/results_experiments_avg_16_ordering/large/adult/model_3/scenario_1/150411259396/model_saved','model_3', 'adult', 'scenario_1'),
+('/home/maximevo/results_experiments_avg_16_ordering/large/mushrooms/model_1/scenario_1/150411471234/model_saved','model_1', 'mushrooms', 'scenario_1'),
+    ('/home/maximevo/results_experiments_avg_16_ordering/large/mushrooms/model_3/scenario_1/150411561711/model_saved','model_3', 'mushrooms', 'scenario_1'),
     
-    ('/home/maximev/results_experiments_avg_16_ordering/large/adult/model_1/scenario_2/150411321747/model_saved','model_1', 'adult', 'scenario_2'),
-    ('/home/maximev/results_experiments_avg_16_ordering/large/adult/model_3/scenario_2/150411382132/model_saved','model_3', 'adult', 'scenario_2'),
+    ('/home/maximevo/results_experiments_avg_16_ordering/large/mushrooms/model_1/scenario_2/150411654681/model_saved','model_1', 'mushrooms', 'scenario_2'),
+    ('/home/maximevo/results_experiments_avg_16_ordering/large/mushrooms/model_3/scenario_2/150411744019/model_saved','model_3', 'mushrooms', 'scenario_2'),
     
-    ('/home/maximev/results_experiments_avg_16_ordering/large/adult/model_1/scenario_3/150411446331/model_saved','model_1', 'adult', 'scenario_3'),
-    ('/home/maximev/results_experiments_avg_16_ordering/large/adult/model_3/scenario_3/150411526819/model_saved','model_3', 'adult', 'scenario_3'),
-    
-    
+    ('/home/maximevo/results_experiments_avg_16_ordering/large/mushrooms/model_1/scenario_3/150411835632/model_saved','model_1', 'mushrooms', 'scenario_3'),
+    ('/home/maximevo/results_experiments_avg_16_ordering/large/mushrooms/model_3/scenario_3/15041196141/model_saved','model_3', 'mushrooms', 'scenario_3'),
     
     
     
     
-    ('/home/maximev/results_experiments_avg_16_ordering/large/dna/model_1/scenario_1/150411669833/model_saved','model_1', 'dna', 'scenario_1'),
-    ('/home/maximev/results_experiments_avg_16_ordering/large/dna/model_3/scenario_1/150411315163/model_saved','model_3', 'dna', 'scenario_1'),
     
-    ('/home/maximev/results_experiments_avg_16_ordering/large/dna/model_1/scenario_2/15041179954/model_saved','model_1', 'dna', 'scenario_2'),
-    ('/home/maximev/results_experiments_avg_16_ordering/large/dna/model_3/scenario_2/150411428912/model_saved','model_3', 'dna', 'scenario_2'),
     
-    ('/home/maximev/results_experiments_avg_16_ordering/large/dna/model_1/scenario_3/150411897736/model_saved','model_1', 'dna', 'scenario_3'),
-    ('/home/maximev/results_experiments_avg_16_ordering/large/dna/model_3/scenario_3/150411993065/model_saved','model_3', 'dna', 'scenario_3'),
     
     
     
@@ -406,7 +398,7 @@ for (path_to_restore,model,dataset,scenario) in xp_to_launch:
     total_loss_test_normalized_avg_constraints *= timeslice_size
     print("what we care about: total_loss_test_normalized_avg_constraints val over 16 constraints ", total_loss_test_normalized_avg_constraints)
 
-    losses_val = losses_val/16.
+    losses_test = losses_test/16.
     
     
     output_pd = pd.DataFrame(np.reshape([path_to_restore,total_loss_test_normalized_avg_constraints],[1,2]),columns=['path','test score'])
