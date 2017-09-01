@@ -35,11 +35,10 @@ dataset_adult = 'adult'
 dataset_dna = 'dna'
 dataset_mushrooms = 'mushrooms'
 dataset_nips = 'nips'
-
+dataset_connect4 = 'connect4'
 # ======== EXPERIMENTS TO LAUNCH =============
 
 batch_size = 128
-n_epochs = 2000
 initial_learning_rate_1 = 0.1
 initial_learning_rate_2 = 0.05
 initial_learning_rate_3 = 0.01
@@ -56,6 +55,17 @@ decay_steps = 2000
 decay_rate = 0.9
 gradient_clip_norm = 9
 early_stop = 20
+
+
+
+
+
+n_epochs = 2000
+
+
+
+
+
 
 config_1 = Config(batch_size=batch_size,n_epochs=n_epochs,initial_learning_rate=initial_learning_rate_1,\
                        decay_steps=decay_steps,decay_rate=decay_rate,gradient_clip_norm=gradient_clip_norm,early_stop=early_stop)
@@ -82,19 +92,19 @@ config_11 = Config(batch_size=batch_size,n_epochs=n_epochs,initial_learning_rate
 
 
 #config_list = [config_1,config_2,config_3,config_4,config_5,config_6,config_7,config_8,config_9,config_10,config_11]
-config_list = [config_4,config_5,config_6,config_7]
+config_list = [config_4,config_5,config_6]
 
 #size_datasets = ['small','large']
-size_datasets = ['small']
+size_datasets = ['small','large']
 
 #models = ['model_1','model_3']
 models = ['model_1','model_3']
 
 #dataset_list = [dataset_adult, dataset_dna, dataset_mushrooms, dataset_nips]
-dataset_list = [dataset_dna]
+dataset_list = [dataset_adult]
 
 #scenarios = ['scenario_1','scenario_2','scenario_3']
-scenarios = ['scenario_1']
+scenarios = ['scenario_2']
 
 xp_to_launch = []
 
@@ -158,7 +168,7 @@ def launch_one_experiment(model,dataset,config, my_solver, my_scenario, my_model
     print "Train model instantiated"
 
     # Instantiate solver
-    solver = my_solver(config, model_train, train_X, valid_X, test_X, my_scenario = my_scenario, my_model = my_model, my_size = my_size)
+    solver = my_solver(config, model_train, train_X, valid_X, test_X, my_scenario = my_scenario, my_model = my_model, my_size = my_size, my_dataset = dataset)
     print "Solver instantiated, starting training"
     
     # Train model

@@ -38,7 +38,7 @@ def save_object(obj, filename):
 
 class Solver:
 
-        def __init__(self, config, model_train, train_data, val_data, test_data, my_scenario, my_model, my_size):
+        def __init__(self, config, model_train, train_data, val_data, test_data, my_scenario, my_model, my_size, my_dataset):
                 global validation_constraints
                 global universe
                 global probas_d
@@ -55,6 +55,7 @@ class Solver:
                 self.test_data = test_data
                 self.train_writer = None
                 self.val_writer = None
+                self.dataset_name = my_dataset
                 
                 scenario = my_scenario
                 model = my_model
@@ -80,17 +81,14 @@ class Solver:
                         validation_constraints.append(constraint)
                         
                 elif scenario == 'scenario_2':
-                    # Create n_random_constraints_val of uniformly random size (but always the same, in order to allow comparisons...) 
+                    # Create n_random_constraints_val of pure generation: ie empty constraints 
                     # Keep them in validation_constraints
                     validation_constraints = []
-                    universe = range(self.config.timeslice_size)
-                    for index,_ in enumerate(range(n_random_constraints_val)):
-                        np.random.seed(seed=index)
-                        size_temp = np.random.choice(self.config.timeslice_size)
-                        print('size_temp',size_temp)
-                        np.random.seed(seed=index)
-                        constraint = np.random.choice(a = universe,size =size_temp , replace = False)
-                        validation_constraints.append(constraint)
+                    universe = range(self.config.timeslice_size)   
+                    size_temp = 0
+                    constraint = np.random.choice(a = universe,size =size_temp , replace = False)
+                    print('constraint',constraint)
+                    validation_constraints.append(constraint)
 
                 elif scenario == 'scenario_3':
                     validation_constraints = []
@@ -306,7 +304,7 @@ class Solver:
                                     if scenario == 'scenario_1':
                                         d = np.random.choice(self.config.timeslice_size, p = probas_d)
                                     elif scenario == 'scenario_2':
-                                        d = np.random.choice(self.config.timeslice_size)
+                                        d = 0
                                     elif scenario == 'scenario_3':
                                         d = int(float(10*10)/(28*28)*self.config.timeslice_size)
                                     else: 
@@ -386,7 +384,10 @@ class Solver:
                         Run validation each X epochs AND each Y seconds
                         """
                         if size=='large':
-                            n_epochs_btw_validation = self.config.timeslice_size
+                            if self.dataset_name=='nips':
+                                n_epochs_btw_validation = int(float(self.config.timeslice_size)/5)
+                            else:
+                                n_epochs_btw_validation = int(float(self.config.timeslice_size)/2)
                         elif size=='small':
                             n_epochs_btw_validation = self.config.timeslice_size/10
                         else:
