@@ -42,6 +42,7 @@ class Solver:
                 global validation_constraints
                 global universe
                 global probas_d
+                global n_random_constraints_val
                 
                 global scenario
                 global model
@@ -79,6 +80,7 @@ class Solver:
                         np.random.seed(seed=index)
                         constraint = np.random.choice(a = universe,size =size_temp , replace = False)
                         validation_constraints.append(constraint)
+                    n_random_constraints_val = len(validation_constraints)
                         
                 elif scenario == 'scenario_2':
                     # Create n_random_constraints_val of pure generation: ie empty constraints 
@@ -89,6 +91,7 @@ class Solver:
                     constraint = np.random.choice(a = universe,size =size_temp , replace = False)
                     print('constraint',constraint)
                     validation_constraints.append(constraint)
+                    n_random_constraints_val = len(validation_constraints)
 
                 elif scenario == 'scenario_3':
                     validation_constraints = []
@@ -100,6 +103,7 @@ class Solver:
                         np.random.seed(seed=index)
                         constraint = np.random.choice(a = universe,size =size_temp , replace = False)
                         validation_constraints.append(constraint)
+                    n_random_constraints_val = len(validation_constraints)
 
                 else: 
                     raise ValueError('solver name does not match, wrong solver?')
@@ -181,6 +185,9 @@ class Solver:
                     
                             custom_ordering = np.tile(temp_custom_ordering,(actual_batch_size_val,1))
 
+                            #print('index',index)
+                            #print('custom_ordering',custom_ordering)
+                        
                             feed_dict = {model_tmp.inputs_placeholder: self.val_data[idx_val],
                                         model_tmp.tf_d: index ,
                                         model_tmp.custom_ordering: custom_ordering}
@@ -320,6 +327,9 @@ class Solver:
                                     ordering = np.concatenate((lower_sorted, upper_sorted), axis=1)
                                 else: 
                                     raise ValueError('model name does not match, wrong model?')
+
+                                print('d',d)
+                                print('ordering',ordering)
 
                                 feed_dict = {model_tmp.inputs_placeholder: self.train_data[idx],
                                              model_tmp.d_train : d,

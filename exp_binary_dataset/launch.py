@@ -104,7 +104,7 @@ models = ['model_1','model_3']
 dataset_list = [dataset_adult]
 
 #scenarios = ['scenario_1','scenario_2','scenario_3']
-scenarios = ['scenario_2']
+scenarios = ['scenario_1','scenario_2','scenario_3']
 
 xp_to_launch = []
 
