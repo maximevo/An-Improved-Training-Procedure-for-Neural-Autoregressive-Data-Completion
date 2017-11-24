@@ -26,8 +26,6 @@ print('FLAGS.logs_dir',FLAGS.logs_dir)
 scenario = None
 model = None
 size = None
-
-
 n_random_constraints_val = 15
 
 def save_object(obj, filename):
@@ -35,19 +33,15 @@ def save_object(obj, filename):
         pickle.dump(obj, f, -1)
         f.close()
 
-
 class Solver:
-
         def __init__(self, config, model_train, train_data, val_data, test_data, my_scenario, my_model, my_size, my_dataset):
                 global validation_constraints
                 global universe
                 global probas_d
                 global n_random_constraints_val
-                
                 global scenario
                 global model
                 global size
-
                 
                 self.config = config
                 self.model_train = model_train
@@ -61,10 +55,6 @@ class Solver:
                 scenario = my_scenario
                 model = my_model
                 size = my_size
-                
-                
-                
-
                 unnormalized_probas_d = np.asarray([ (float)(math.factorial(self.config.timeslice_size) / (math.factorial(i)*math.factorial(self.config.timeslice_size - i))) for i in range(self.config.timeslice_size )] )
                 probas_d = unnormalized_probas_d/np.sum(unnormalized_probas_d)
 
@@ -109,7 +99,6 @@ class Solver:
                     raise ValueError('solver name does not match, wrong solver?')
 
         def get_variables(self, loss,global_step, training):
-
                 learning_rate = tf.train.exponential_decay(
                             self.config.initial_learning_rate, global_step, self.config.decay_steps,
                             self.config.decay_rate, staircase=True)
@@ -158,7 +147,6 @@ class Solver:
                     n_unknown = self.config.timeslice_size - n_known
                     unknown_notes = np.setdiff1d(universe,constraint) # unknown notes are ordered in pitch ascending order
 
-
                     if len(set(constraint))==0:
                         temp_custom_ordering = np.array(unknown_notes) 
                     else: 
@@ -175,25 +163,17 @@ class Solver:
                         
                         for i in range(n_batch_per_epoch_val):
                             start_idx_val = (i*self.config.batch_size_val)%self.val_data.shape[0]
-                            idx_val = train_indices_val[start_idx_val:start_idx_val+self.config.batch_size_val]
-                              
+                            idx_val = train_indices_val[start_idx_val:start_idx_val+self.config.batch_size_val]  
                             actual_batch_size_val = self.val_data[idx_val].shape[0]
                             
                             if actual_batch_size_val==0:
                                 continue
                             total_actual_batch_size_val += actual_batch_size_val
-                    
-                            custom_ordering = np.tile(temp_custom_ordering,(actual_batch_size_val,1))
-
-                            #print('index',index)
-                            #print('custom_ordering',custom_ordering)
-                        
+                            custom_ordering = np.tile(temp_custom_ordering,(actual_batch_size_val,1))                        
                             feed_dict = {model_tmp.inputs_placeholder: self.val_data[idx_val],
                                         model_tmp.tf_d: index ,
                                         model_tmp.custom_ordering: custom_ordering}
-
                             loss_val_ = session.run(variables_val,feed_dict=feed_dict)
-
                             total_loss_val_ += np.sum(loss_val_)
 
                         total_loss_val_ =  float(total_loss_val_)/total_actual_batch_size_val
@@ -214,8 +194,6 @@ class Solver:
                 # this is the mean of each 1D cond: multiply by timeslice size to get a number easier to read
                 total_loss_val_normalized_avg_constraints *= self.config.timeslice_size
                 print("what we care about: total_loss_val_normalized_avg_constraints val",total_loss_val_normalized_avg_constraints)
-                
-
                 # losses_val is a np.array of size timeslicesize*timeslicesize: we write it in an excel file 
                 output_pd = pd.DataFrame(data = np.reshape(losses_val,[1,-1]))
 
@@ -231,7 +209,6 @@ class Solver:
                         output_pd.to_csv(f, header=False,index=False)
                         f.close() 
                 print('== Validation results saved in csv! ==')
-
                 
                 summary = tf.Summary()
                 summary.value.add(tag='avg_val_loss_with_nb_epoch', simple_value=total_loss_val_normalized_avg_constraints)
@@ -256,8 +233,7 @@ class Solver:
                         n_incr_error += 1
 
                 return best_val_error,best_epoch,n_incr_error,total_loss_val_normalized_avg_constraints
-
-
+              
         def run_model(self, session,variables_train, learning_rate,variables_val, global_step,sv,n_epochs ):
                 model_tmp = self.model_train
 
@@ -266,13 +242,10 @@ class Solver:
                 # so that all models use the same random ordering of the train indices
                 np.random.seed(0)
                 np.random.shuffle(train_indices)
-
                 global_step_ = session.run(global_step)
-
+                
                 print('=== Starting training loop... ===')
-
                 n_batch_per_epoch = int(math.ceil(self.train_data.shape[0]/self.config.batch_size)) + 1 #+1 to get the remaining portion of train data that doesn't fill a batch
-
                 n_incr_error = 0
                 best_val_error = np.inf
                 best_train_error = np.inf
@@ -294,17 +267,14 @@ class Solver:
                                         break
 
                                 start_idx = (i*self.config.batch_size)%self.train_data.shape[0]
-                                idx = train_indices[start_idx:start_idx+self.config.batch_size]
-                                
+                                idx = train_indices[start_idx:start_idx+self.config.batch_size] 
                                 actual_batch_size = self.train_data[idx].shape[0]
                                 if actual_batch_size==0:
                                         continue
 
                                 if model=='model_1':
                                     d = 0
-                                    ordering = np.tile(np.random.choice(range(self.config.timeslice_size), size=self.config.timeslice_size, replace=False, p=None).astype(np.int32),(actual_batch_size,1))
-
-                                    
+                                    ordering = np.tile(np.random.choice(range(self.config.timeslice_size), size=self.config.timeslice_size, replace=False, p=None).astype(np.int32),(actual_batch_size,1))    
                                 
                                 elif model=='model_3':
                                     
@@ -328,9 +298,6 @@ class Solver:
                                 else: 
                                     raise ValueError('model name does not match, wrong model?')
 
-                                print('d',d)
-                                print('ordering',ordering)
-
                                 feed_dict = {model_tmp.inputs_placeholder: self.train_data[idx],
                                              model_tmp.d_train : d,
                                              model_tmp.ordering_placeholder : ordering,
@@ -340,8 +307,6 @@ class Solver:
 
                                 # c'est l'avg sur le batch, de la log likelihood, normalisee par le nb de 1D conditionals impliques (1), calculee grace au produit autoregressif partiel 
                                 loss_train_ = variables_[0]
-                                
-
                                 n_examples += actual_batch_size
                                 total_train_n_examples += actual_batch_size
                                 # we compute: timeslice_size - d 1D conds!!
@@ -351,7 +316,6 @@ class Solver:
                                     total_train_n_1Dconds += actual_batch_size*(self.config.timeslice_size - d)
                                 else:
                                     raise ValueError('invalid size of dataset: small or large?')
-
                                 
                                 summary = tf.Summary()
                                 summary.value.add(tag='Ev_minibatch_loss_train_with_nb_training_examples (divided by self.train_data.shape[0])', simple_value=loss_train_)
@@ -370,7 +334,6 @@ class Solver:
                         # this is the mean of each 1D cond: multiply by timeslice size to get a number easier to read
                         train_loss_epoch *= self.config.timeslice_size
 
-                        
                         if train_loss_epoch < best_train_error:
                                 best_train_error = train_loss_epoch
                                 best_train_epoch = epoch_id
@@ -383,12 +346,10 @@ class Solver:
                         summary_4.value.add(tag='Ev_epoch_loss_train_with_nb_training_examples (divided by self.train_data.shape[0])', simple_value=train_loss_epoch)
                         self.train_writer.add_summary(summary_4, global_step=total_train_n_examples/self.train_data.shape[0])
 
-
                         summary_5 = tf.Summary()
                         summary_5.value.add(tag='Ev_epoch_loss_train_with_nb_1D_cond_computations (divided by self.train_data.shape[0]*self.config.timeslice_size)', simple_value=train_loss_epoch)
                         self.train_writer.add_summary(summary_5, global_step = total_train_n_1Dconds / (self.train_data.shape[0]*self.config.timeslice_size))
-
-                                                
+                    
                         """
                         Validation: each validation should save a ton of info into a csv file
                         Run validation each X epochs AND each Y seconds
@@ -407,14 +368,10 @@ class Solver:
 
                             best_val_error,best_val_epoch,n_incr_error,total_loss_val_normalized_avg_constraints = self.validation(sv,session,variables_val,n_batch_per_epoch,\
                                     best_val_error,best_val_epoch,n_incr_error,epoch_id,total_train_n_examples, total_train_n_1Dconds)
-
-
-
                             print("== Epoch %d - train_loss: %.3f - val_loss: %.3f ==" %(epoch_id,train_loss_epoch,total_loss_val_normalized_avg_constraints))
                         else:
                             print("== Epoch %d - train_loss: %.3f " %(epoch_id,train_loss_epoch))
-
-
+                            
                 # Save results in CSV file
                 # config parameters
                 parameter_keys_raw = dir(self.config)
@@ -449,14 +406,10 @@ class Solver:
                         output_pd.to_csv(f, header=header_boolean,index=False)
                 print('== Results saved in csv! ==')
                 print('=== Training complete. ===')
-
                 return 
-
 
         def train(self,dataset):
                 global start
-
-
                 if not(self.config.id_exp == None):
                 # If the config file contains the ID of the experiment, then restore this model
                         id_experiment = str(self.config.id_exp)
@@ -466,20 +419,11 @@ class Solver:
                         print('id_experiment',id_experiment)
 
                 # Path where model will be saved
-
-
-                
                 log_dir = os.path.join(*[FLAGS.logs_dir,  size , dataset, model, scenario, id_experiment, 'model_saved'])
                 summary_dir = os.path.join(*[FLAGS.logs_dir,  size , dataset, model, scenario, id_experiment, 'summary'])
                 path_plots_results = os.path.join(*[FLAGS.logs_dir,  size , dataset, model, scenario, id_experiment, 'plots'])
                 path_csv_results = os.path.join(FLAGS.logs_dir,'xp')
-
-
-                print('log_dir',log_dir)
-                print('summary_dir',summary_dir)
-                print('path_plots_results',path_plots_results)
-                print('path_csv_results',path_csv_results)
-
+                
                 if not os.path.exists(log_dir):
                         os.makedirs(log_dir)
                 if not os.path.exists(summary_dir):
@@ -502,12 +446,6 @@ class Solver:
                 loss_val = self.model_train.logprob_val
                 variables_train,learning_rate = self.get_variables(loss_train, global_step=global_step,training=True)
                 variables_val = self.get_variables(loss_val, global_step=global_step,training=False)
-
-
-                #else:
-                #    loss = self.model_train.logprob
-                #    variables_train,learning_rate = self.get_variables(loss, global_step=global_step,training=True)
-                #    variables_val = self.get_variables(loss, global_step=global_step,training=False)
 
                 # Summary op
                 self.train_writer = tf.summary.FileWriter( os.path.join(self.config.summary_dir,'train') )
