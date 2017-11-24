@@ -2,81 +2,39 @@
 In this script, we launch the experiment.
 Keywords can control: small dataset or large dataset, scenario 1,2,3 or 4, model1 or model3 
 """
-
-
-###########
-# BEGIN TO CHOOSE IN ORDER TO LAUNCH TEST!
-###########
 # Define size hidden layer
 size_hidden_layer = 500
 batch_size_test = 512
-
 xp_to_launch = []
-
-
 xp_to_launch = [
    
 ('/home/maximevo/results_experiments_avg_16_ordering/large/mushrooms/model_1/scenario_1/150411471234/model_saved','model_1', 'mushrooms', 'scenario_1'),
     ('/home/maximevo/results_experiments_avg_16_ordering/large/mushrooms/model_3/scenario_1/150411561711/model_saved','model_3', 'mushrooms', 'scenario_1'),
-    
     ('/home/maximevo/results_experiments_avg_16_ordering/large/mushrooms/model_1/scenario_2/150411654681/model_saved','model_1', 'mushrooms', 'scenario_2'),
     ('/home/maximevo/results_experiments_avg_16_ordering/large/mushrooms/model_3/scenario_2/150411744019/model_saved','model_3', 'mushrooms', 'scenario_2'),
-    
     ('/home/maximevo/results_experiments_avg_16_ordering/large/mushrooms/model_1/scenario_3/150411835632/model_saved','model_1', 'mushrooms', 'scenario_3'),
     ('/home/maximevo/results_experiments_avg_16_ordering/large/mushrooms/model_3/scenario_3/15041196141/model_saved','model_3', 'mushrooms', 'scenario_3'),
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 ]
-
-
-###########
-# END TO CHOOSE IN ORDER TO LAUNCH TEST!
-###########
-
-
-
-
 
 import sys, os
 import math
 import tensorflow as tf
 import pandas as pd
-
 my_path = os.path.dirname( os.path.abspath(__file__) )
 root = os.path.dirname(os.path.dirname( os.path.abspath(__file__) ))
-
-print('my_path',my_path)
-print('root',root)
-
-
 if not (my_path in sys.path):
     sys.path.append(my_path)
 if not (root in sys.path):
     sys.path.append(root)
-    
 from model import Model
-
 from solver import Solver
-
 from config import Config
-
 import copy
 import sys
 import os
 import time
 import numpy as np
 import mlpython.mlproblems.generic as mlpb
-
-
-
 
 def load_data(dataset_name):
     datadir = root + '/data/'
@@ -99,26 +57,12 @@ def load_data(dataset_name):
     test_X = testset.data.mem_data[0]
     return train_X,valid_X,test_X
 
-
-
-
-
-
 dirfile = './../../results_experiments_avg_16_orderings/test/'
-
 if not os.path.exists(dirfile):
     os.makedirs(dirfile)
-
 pathfile = dirfile + 'test_xp.csv'
 
-
-
-
-
 for (path_to_restore,model,dataset,scenario) in xp_to_launch:
-
-
-
     # load dataset
     datasets = ['adult', 'binarized_mnist', 'connect4', 'dna', 'mushrooms', 'nips', 'ocr_letters', 'rcv1', 'web']
     if dataset not in datasets:
@@ -133,8 +77,6 @@ for (path_to_restore,model,dataset,scenario) in xp_to_launch:
 
     # Choose timeslice_size
     timeslice_size = test_X.shape[1]
-
-
 
     # Create the 16 orderings that we will average
     mp_16 = []
@@ -152,13 +94,10 @@ for (path_to_restore,model,dataset,scenario) in xp_to_launch:
         mp_16.append(mp)
         sorting_dict_16.append(sorting_dict)
 
-        
     # Create test constraints: choose a different random seed than validation
     unnormalized_probas_d = np.asarray([ (float)(math.factorial(timeslice_size) / (math.factorial(i)*math.factorial(timeslice_size - i))) for i in range(timeslice_size )] )
     probas_d = unnormalized_probas_d/np.sum(unnormalized_probas_d)
-
     n_random_constraints_test = 20
-
     if scenario == 'scenario_1':
                         # Create n_random_constraints_test random (but always the same, in order to allow comparisons...) constraints among all constraints of all sizes -> it is likely to be constraints of 'middle' size 
                         # Keep them in validation_constraints
@@ -199,10 +138,6 @@ for (path_to_restore,model,dataset,scenario) in xp_to_launch:
     else: 
                         raise ValueError('solver name does not match, wrong solver?')
 
-
-
-
-
     def my_func_3(ordering):
                 #print('shape my func 3',np.asarray(range(ordering.shape[0]),dtype=np.int32).shape)
                 return np.asarray(range(ordering.shape[0]),dtype=np.int32)
@@ -226,12 +161,8 @@ for (path_to_restore,model,dataset,scenario) in xp_to_launch:
     # tf_d is used for validation
     tf_d = tf.placeholder(tf.int32, shape=[])
     custom_ordering_tf = tf.placeholder(tf.int32,shape = [None,timeslice_size])
-
-
     my_ordering = custom_ordering_tf
-
     # Compute validation: for a constraint of size k, we compute the autoregressive product p(x_unknwn | x_knwn) in pitch-ascending ordering of x_unknwn. Note: the ordering is provided to this script: it is a placeholder
-
     with tf.variable_scope('OrderlessNADE_model') as scope:
         W = tf.get_variable("W", shape = (2*timeslice_size, size_hidden_layer), initializer = tf.contrib.layers.xavier_initializer())
         V = tf.get_variable("V", shape = (size_hidden_layer, timeslice_size), initializer = tf.contrib.layers.xavier_initializer())
@@ -242,13 +173,10 @@ for (path_to_restore,model,dataset,scenario) in xp_to_launch:
         scope.reuse_variables()
 
     inputs_flat = inputs_placeholder
-
-
+   
     # Offset so that the loss is never equal to log(0)
     offset = tf.constant(10**(-14), dtype=tf.float32,name='offset', verify_shape=False)
-
     log_probability_test = 0
-
     with tf.variable_scope("OrderlessNADE_step"):
                 #temp_mask = tf.ones_like(inputs_flat, dtype=tf.float32)
                 row_indices_test = tf.py_func(my_func_3, [my_ordering], tf.int32)
@@ -258,82 +186,43 @@ for (path_to_restore,model,dataset,scenario) in xp_to_launch:
                 #print('o_d_val',o_d_val)
 
                 temp_mask_test = tf.py_func(get_mask_float, [my_ordering,tf_d], tf.float32)
-
                 inputs_flat_masked_test = inputs_flat*temp_mask_test
 
                 # Replace by RELU??
                 hi_test = tf.sigmoid(tf.matmul(tf.concat([inputs_flat_masked_test, temp_mask_test], 1) ,W)+a)
-
                 coords_test = tf.transpose(tf.stack([row_indices_test, o_d_test]))
 
                 #temp_b = b[0,d]
                 coords_b_test = tf.transpose(tf.stack([row_indices_b_test, o_d_test]))
                 temp_b_test =  tf.gather_nd(b, coords_b_test)
 
-                # method 1: if each element of the batch has a different o_d
-                #p_shape_val = tf.shape(V)
-                #p_flat_val = tf.reshape(V, [-1])
-                #i_temp_val = tf.reshape(tf.range(0, p_shape_val[0]) * p_shape_val[1], [1, -1])
-
-                #o_d_temp_val = tf.reshape(o_d_val,[-1,1])
-                #i_flat_val = tf.reshape( i_temp_val + tf.reshape(o_d_val,[-1,1]), [-1])
-
-                #before_Z_val = tf.gather(p_flat_val, i_flat_val) # WHY this intermediate result is 1 line rather than multiple lines? 
-                #Z_val =  tf.reshape(before_Z_val, [-1,p_shape_val[0]] ) # Z_0 SHOULD HAVE THE SAME LINES !!
-                # DOES Z CONTAIN THE VALUES WE EXPECT?? especially the last reshape: not sure it gives the expected result ...
-                #alternative_temp_product_val = hi_val*Z_val
-                #temp_product_val = tf.reduce_sum( alternative_temp_product_val, 1)
-
-
                 # method 2: if all the elements of the batch have the same o_d
                 V_o_d_test = V[:,o_d_test[0]]
                 V_o_d_test = tf.reshape(V_o_d_test,[-1,1])
                 temp_product_alternative_test = tf.matmul(hi_test,V_o_d_test)
                 temp_product_alternative_test = tf.reshape(temp_product_alternative_test,[-1,])
-
                 p_o_d_test=tf.sigmoid(temp_b_test + temp_product_alternative_test)
                 v_o_d_test = tf.gather_nd(inputs_flat, coords_test)
-
                 log_prob_test = tf.multiply(v_o_d_test,tf.log(p_o_d_test + offset)) + tf.multiply((1-v_o_d_test),tf.log((1-p_o_d_test) + offset))   ## shape = (?, 1) 1 probability for each element in the batch an for all time
-
-                #log_probability_val += log_prob_val
-
-                #loss_val = -tf.reduce_mean(log_probability_val)
                 loss_test = -log_prob_test
-
-
-
-
-
     saver = tf.train.Saver()
 
     # Create session
     session = tf.Session()
     # Restore parameters
-
     # Choose exp ID 
     ckpt_path = tf.train.latest_checkpoint(path_to_restore)
     print('=================== ckpt_path ===============',ckpt_path)
     saver.restore(session, ckpt_path)
-
-
     losses_test = np.full([timeslice_size*timeslice_size],np.nan)
-
-
     n_batch_per_epoch_test = int(math.ceil(test_X.shape[0]/batch_size_test)) + 1
-    print('n_batch_per_epoch_test',n_batch_per_epoch_test)
-
     train_indices_test = np.arange(test_X.shape[0])
 
     np.random.seed(0)
     np.random.shuffle(train_indices_test)
 
     total_loss_test_normalized_avg_constraints = 0
-
-
     for constraint_id,constraint in enumerate(test_constraints):
-
-
 
                         n_known = constraint.size
                         n_unknown = timeslice_size - n_known
@@ -342,9 +231,7 @@ for (path_to_restore,model,dataset,scenario) in xp_to_launch:
 
                         for j in range(16):
                             sorting_dict = sorting_dict_16[j]
-
                             unknown_notes_sorted = sorted(unknown_notes,key = lambda x: sorting_dict[x])
-
                             constraint_sorted = sorted(constraint,key = lambda x: sorting_dict[x])
 
                             if len(set(constraint))==0:
@@ -363,11 +250,7 @@ for (path_to_restore,model,dataset,scenario) in xp_to_launch:
 
                                     start_idx_test = (i*batch_size_test)%test_X.shape[0]
                                     idx_test = train_indices_test[start_idx_test:start_idx_test+batch_size_test]
-
-
                                     actual_batch_size_test = test_X[idx_test].shape[0]
-
-
                                     if actual_batch_size_test==0:
                                         continue
                                     total_actual_batch_size_test += actual_batch_size_test
@@ -379,8 +262,6 @@ for (path_to_restore,model,dataset,scenario) in xp_to_launch:
                                                 custom_ordering_tf: custom_ordering}
 
                                     loss_test_ = session.run(loss_test,feed_dict=feed_dict)
-
-
                                     total_loss_test_ += np.sum(loss_test_)
 
                                 total_loss_test_ =  float(total_loss_test_)/total_actual_batch_size_test
