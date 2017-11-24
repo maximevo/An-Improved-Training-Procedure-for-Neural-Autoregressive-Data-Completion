@@ -1,23 +1,17 @@
 import os
-
 '''
 	Config object class.
 	We feed a config object to the model and solver builder.
 '''
-
 class Config:
 	'''
 		Config for ED model
 	'''
-
 	def __init__(self,size_hidden_layer=500,num_threads=2,batch_size=128,batch_size_val=512,n_epochs=2000,initial_learning_rate=0.005,decay_steps=1000, \
 					decay_rate = 0.99,gradient_clip_norm=5,update_rule='adam',early_stop=20,path_to_saved_model=None):
 
-		# TODO: Complete with all default parameters
-
 		# Data loading parameters
 		self.timeslice_size = None
-
 
 		# Model parameters
 		self.size_hidden_layer = size_hidden_layer
@@ -43,6 +37,3 @@ class Config:
 		self.summary_dir = None
 		self.summary_frequency = 20
 		self.path_to_saved_model = path_to_saved_model
-
-
-
