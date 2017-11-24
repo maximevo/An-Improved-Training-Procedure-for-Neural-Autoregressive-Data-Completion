@@ -1,25 +1,16 @@
 """
-In this script, we launch the experiment.
+In this script, we launch the test experiment.
 Keywords can control: small dataset or large dataset, scenario 1,2,3 or 4, model1 or model3 
 """
-
-
-###########
-# BEGIN TO CHOOSE IN ORDER TO LAUNCH TEST!
-###########
 # Define size hidden layer
 size_hidden_layer = 500
 batch_size_test = 512
-
 xp_to_launch = []
-
-
 xp_to_launch = [
    
 ('/home/maximev/results_experiments/small/adult/model_1/scenario_2/150350958434/model_saved','model_1', 'adult', 'scenario_2'),
    
     ('/home/maximev/results_experiments/small/adult/model_3/scenario_2/15035549642/model_saved','model_3', 'adult', 'scenario_2'),
-    
     ('/home/maximev/results_experiments/small/adult/model_1/scenario_3/150352175227/model_saved','model_1', 'adult', 'scenario_3'),
     ('/home/maximev/results_experiments/small/adult/model_3/scenario_3/150354615414/model_saved','model_3', 'adult', 'scenario_3'),
     ('/home/maximev/results_experiments/large/adult/model_1/scenario_1/150380448147/model_saved','model_1', 'adult', 'scenario_1'),
@@ -28,7 +19,6 @@ xp_to_launch = [
     ('/home/maximev/results_experiments/large/adult/model_3/scenario_2/150385458875/model_saved','model_3', 'adult', 'scenario_2'),
     ('/home/maximev/results_experiments/large/adult/model_1/scenario_3/150385496752/model_saved','model_1', 'adult', 'scenario_3'),
     ('/home/maximev/results_experiments/large/adult/model_3/scenario_3/150385535075/model_saved','model_3', 'adult', 'scenario_3'),
-    
     ('/home/maximev/results_experiments/small/dna/model_1/scenario_1/150367792229/model_saved','model_1', 'dna', 'scenario_1'),
     ('/home/maximev/results_experiments/small/dna/model_3/scenario_1/150368272103/model_saved','model_3', 'dna', 'scenario_1'),
     ('/home/maximev/results_experiments/small/dna/model_1/scenario_2/150367988754/model_saved','model_1', 'dna', 'scenario_2'),
@@ -45,15 +35,6 @@ xp_to_launch = [
     ('/home/maximev/results_experiments/small/mushrooms/model_3/scenario_2/150377566779/model_saved','model_3', 'mushrooms', 'scenario_2')
 ]
 
-
-###########
-# END TO CHOOSE IN ORDER TO LAUNCH TEST!
-###########
-
-
-
-
-
 import sys, os
 import math
 import tensorflow as tf
@@ -61,31 +42,21 @@ import pandas as pd
 
 my_path = os.path.dirname( os.path.abspath(__file__) )
 root = os.path.dirname(os.path.dirname( os.path.abspath(__file__) ))
-
 print('my_path',my_path)
 print('root',root)
-
-
 if not (my_path in sys.path):
     sys.path.append(my_path)
 if not (root in sys.path):
     sys.path.append(root)
-    
 from model import Model
-
 from solver import Solver
-
 from config import Config
-
 import copy
 import sys
 import os
 import time
 import numpy as np
 import mlpython.mlproblems.generic as mlpb
-
-
-
 
 def load_data(dataset_name):
     datadir = root + '/data/'
@@ -108,11 +79,6 @@ def load_data(dataset_name):
     test_X = testset.data.mem_data[0]
     return train_X,valid_X,test_X
 
-
-
-
-
-
 dirfile = './../../results_experiments/test/'
 
 if not os.path.exists(dirfile):
@@ -120,13 +86,7 @@ if not os.path.exists(dirfile):
 
 pathfile = dirfile + 'test_xp.csv'
 
-
-
-
 for (path_to_restore,model,dataset,scenario) in xp_to_launch:
-
-
-
     # load dataset
     datasets = ['adult', 'binarized_mnist', 'connect4', 'dna', 'mushrooms', 'nips', 'ocr_letters', 'rcv1', 'web']
     if dataset not in datasets:
@@ -142,12 +102,9 @@ for (path_to_restore,model,dataset,scenario) in xp_to_launch:
     # Choose timeslice_size
     timeslice_size = test_X.shape[1]
 
-
-
     # Create test constraints: choose a different random seed than validation
     unnormalized_probas_d = np.asarray([ (float)(math.factorial(timeslice_size) / (math.factorial(i)*math.factorial(timeslice_size - i))) for i in range(timeslice_size )] )
     probas_d = unnormalized_probas_d/np.sum(unnormalized_probas_d)
-
     n_random_constraints_test = 20
 
     if scenario == 'scenario_1':
@@ -189,10 +146,6 @@ for (path_to_restore,model,dataset,scenario) in xp_to_launch:
 
     else: 
                         raise ValueError('solver name does not match, wrong solver?')
-
-
-
-
 
     def my_func_3(ordering):
                 #print('shape my func 3',np.asarray(range(ordering.shape[0]),dtype=np.int32).shape)
@@ -244,60 +197,31 @@ for (path_to_restore,model,dataset,scenario) in xp_to_launch:
                 #temp_mask = tf.ones_like(inputs_flat, dtype=tf.float32)
                 row_indices_test = tf.py_func(my_func_3, [my_ordering], tf.int32)
                 row_indices_b_test = tf.py_func(my_func_4, [my_ordering], tf.int32)
-
                 o_d_test = my_ordering[:,tf_d]
                 #print('o_d_val',o_d_val)
-
                 temp_mask_test = tf.py_func(get_mask_float, [my_ordering,tf_d], tf.float32)
-
                 inputs_flat_masked_test = inputs_flat*temp_mask_test
-
+               
                 # Replace by RELU??
                 hi_test = tf.sigmoid(tf.matmul(tf.concat([inputs_flat_masked_test, temp_mask_test], 1) ,W)+a)
-
                 coords_test = tf.transpose(tf.stack([row_indices_test, o_d_test]))
 
                 #temp_b = b[0,d]
                 coords_b_test = tf.transpose(tf.stack([row_indices_b_test, o_d_test]))
                 temp_b_test =  tf.gather_nd(b, coords_b_test)
 
-                # method 1: if each element of the batch has a different o_d
-                #p_shape_val = tf.shape(V)
-                #p_flat_val = tf.reshape(V, [-1])
-                #i_temp_val = tf.reshape(tf.range(0, p_shape_val[0]) * p_shape_val[1], [1, -1])
-
-                #o_d_temp_val = tf.reshape(o_d_val,[-1,1])
-                #i_flat_val = tf.reshape( i_temp_val + tf.reshape(o_d_val,[-1,1]), [-1])
-
-                #before_Z_val = tf.gather(p_flat_val, i_flat_val) # WHY this intermediate result is 1 line rather than multiple lines? 
-                #Z_val =  tf.reshape(before_Z_val, [-1,p_shape_val[0]] ) # Z_0 SHOULD HAVE THE SAME LINES !!
-                # DOES Z CONTAIN THE VALUES WE EXPECT?? especially the last reshape: not sure it gives the expected result ...
-                #alternative_temp_product_val = hi_val*Z_val
-                #temp_product_val = tf.reduce_sum( alternative_temp_product_val, 1)
-
-
-                # method 2: if all the elements of the batch have the same o_d
                 V_o_d_test = V[:,o_d_test[0]]
                 V_o_d_test = tf.reshape(V_o_d_test,[-1,1])
                 temp_product_alternative_test = tf.matmul(hi_test,V_o_d_test)
                 temp_product_alternative_test = tf.reshape(temp_product_alternative_test,[-1,])
-
                 p_o_d_test=tf.sigmoid(temp_b_test + temp_product_alternative_test)
                 v_o_d_test = tf.gather_nd(inputs_flat, coords_test)
-
                 log_prob_test = tf.multiply(v_o_d_test,tf.log(p_o_d_test + offset)) + tf.multiply((1-v_o_d_test),tf.log((1-p_o_d_test) + offset))   ## shape = (?, 1) 1 probability for each element in the batch an for all time
-
-                #log_probability_val += log_prob_val
 
                 #loss_val = -tf.reduce_mean(log_probability_val)
                 loss_test = -log_prob_test
 
-
-
-
-
     saver = tf.train.Saver()
-
     # Create session
     session = tf.Session()
     # Restore parameters
@@ -306,33 +230,18 @@ for (path_to_restore,model,dataset,scenario) in xp_to_launch:
     ckpt_path = tf.train.latest_checkpoint(path_to_restore)
     print('=================== ckpt_path ===============',ckpt_path)
     saver.restore(session, ckpt_path)
-
-
     losses_test = np.full([timeslice_size*timeslice_size],np.nan)
-
-
     n_batch_per_epoch_test = int(math.ceil(test_X.shape[0]/batch_size_test)) + 1
     print('n_batch_per_epoch_test',n_batch_per_epoch_test)
-
     train_indices_test = np.arange(test_X.shape[0])
-
     np.random.seed(0)
     np.random.shuffle(train_indices_test)
-
     total_loss_test_normalized_avg_constraints = 0
-
-
     for constraint_id,constraint in enumerate(test_constraints):
-
-
-
                         n_known = constraint.size
                         n_unknown = timeslice_size - n_known
                         unknown_notes = np.setdiff1d(universe,constraint) # unknown notes are ordered in pitch ascending order
-
                         print('constraint_id',constraint_id)
-
-
                         if len(set(constraint))==0:
                             temp_custom_ordering = np.array(unknown_notes) 
                         else: 
@@ -389,17 +298,7 @@ for (path_to_restore,model,dataset,scenario) in xp_to_launch:
     # this is the mean of each 1D cond: multiply by timeslice size to get a number easier to read
     total_loss_test_normalized_avg_constraints *= timeslice_size
     print("what we care about: total_loss_test_normalized_avg_constraints test",total_loss_test_normalized_avg_constraints)
-
-    
-    
     output_pd = pd.DataFrame(np.reshape([path_to_restore,total_loss_test_normalized_avg_constraints],[1,2]),columns=['path','test score'])
-    
-
-    print('output_pd',output_pd)
-    
     header_boolean = not(os.path.isfile(pathfile))
     with open(pathfile, 'a') as f:
         output_pd.to_csv(f, header=header_boolean,index=False)
-
-
-                        
