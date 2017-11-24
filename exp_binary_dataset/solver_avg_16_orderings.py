@@ -6,7 +6,6 @@ import time
 import os
 import pandas as pd
 import random
-
 # tport prepro of log path
 from tensorport import get_logs_path
 
@@ -36,7 +35,6 @@ def save_object(obj, filename):
         pickle.dump(obj, f, -1)
         f.close()
 
-
 class Solver:
 
         def __init__(self, config, model_train, train_data, val_data, test_data, my_scenario, my_model, my_size):
@@ -47,12 +45,9 @@ class Solver:
                 global scenario
                 global model
                 global size
-                
                 global sorting_dict_16
                 global mp_16
 
-
-                
                 self.config = config
                 self.model_train = model_train
                 self.train_data = train_data
@@ -81,7 +76,6 @@ class Solver:
                     mp_16.append(mp)
                     sorting_dict_16.append(sorting_dict)
 
-                    
                 unnormalized_probas_d = np.asarray([ (float)(math.factorial(self.config.timeslice_size) / (math.factorial(i)*math.factorial(self.config.timeslice_size - i))) for i in range(self.config.timeslice_size )] )
                 probas_d = unnormalized_probas_d/np.sum(unnormalized_probas_d)
 
@@ -177,12 +171,7 @@ class Solver:
                     
                     for j in range(16):
                         sorting_dict = sorting_dict_16[j]
-
-
-
-
                         unknown_notes_sorted = sorted(unknown_notes,key = lambda x: sorting_dict[x])
-
                         constraint_sorted = sorted(constraint,key = lambda x: sorting_dict[x])
 
                         # TO CHANGE FOR CUSTOM ORDERING: SORT CONSTRAINT AND UNKNOWN NOTES IN THE ORDERING WE WANT!
@@ -252,7 +241,6 @@ class Solver:
                         f.close() 
                 print('== Validation results saved in csv! ==')
 
-                
                 summary = tf.Summary()
                 summary.value.add(tag='avg_val_loss_with_nb_epoch', simple_value=total_loss_val_normalized_avg_constraints)
                 self.val_writer.add_summary(summary, global_step=epoch_id)
@@ -292,7 +280,6 @@ class Solver:
                 print('=== Starting training loop... ===')
 
                 n_batch_per_epoch = int(math.ceil(self.train_data.shape[0]/self.config.batch_size)) + 1 #+1 to get the remaining portion of train data that doesn't fill a batch
-
                 n_incr_error = 0
                 best_val_error = np.inf
                 best_train_error = np.inf
@@ -323,7 +310,6 @@ class Solver:
                                 if model=='model_1':
                                     d = 0
                                     ordering = np.tile(np.random.choice(range(self.config.timeslice_size), size=self.config.timeslice_size, replace=False, p=None).astype(np.int32),(actual_batch_size,1))
-
                                     
                                 elif model=='model_3':
                                     
@@ -377,8 +363,7 @@ class Solver:
                                     total_train_n_1Dconds += actual_batch_size*(self.config.timeslice_size - d)
                                 else:
                                     raise ValueError('invalid size of dataset: small or large?')
-
-                                
+ 
                                 summary = tf.Summary()
                                 summary.value.add(tag='Ev_minibatch_loss_train_with_nb_training_examples (divided by self.train_data.shape[0])', simple_value=loss_train_)
                                 self.train_writer.add_summary(summary, global_step= total_train_n_examples/self.train_data.shape[0])
@@ -413,8 +398,7 @@ class Solver:
                         summary_5 = tf.Summary()
                         summary_5.value.add(tag='Ev_epoch_loss_train_with_nb_1D_cond_computations (divided by self.train_data.shape[0]*self.config.timeslice_size)', simple_value=train_loss_epoch)
                         self.train_writer.add_summary(summary_5, global_step = total_train_n_1Dconds / (self.train_data.shape[0]*self.config.timeslice_size))
-
-                                                
+                      
                         """
                         Validation: each validation should save a ton of info into a csv file
                         Run validation each X epochs AND each Y seconds
@@ -430,14 +414,10 @@ class Solver:
 
                             best_val_error,best_val_epoch,n_incr_error,total_loss_val_normalized_avg_constraints = self.validation(sv,session,variables_val,n_batch_per_epoch,\
                                     best_val_error,best_val_epoch,n_incr_error,epoch_id,total_train_n_examples, total_train_n_1Dconds)
-
-
-
                             print("== Epoch %d - train_loss: %.3f - val_loss: %.3f ==" %(epoch_id,train_loss_epoch,total_loss_val_normalized_avg_constraints))
                         else:
                             print("== Epoch %d - train_loss: %.3f " %(epoch_id,train_loss_epoch))
-
-
+                            
                 # Save results in CSV file
                 # config parameters
                 parameter_keys_raw = dir(self.config)
@@ -475,11 +455,8 @@ class Solver:
 
                 return 
 
-
         def train(self,dataset):
                 global start
-
-
                 if not(self.config.id_exp == None):
                 # If the config file contains the ID of the experiment, then restore this model
                         id_experiment = str(self.config.id_exp)
@@ -488,15 +465,11 @@ class Solver:
                         id_experiment = str(time.time()).replace('.','')
                         print('id_experiment',id_experiment)
 
-                # Path where model will be saved
-
-
-                
+                # Path where model will be saved                
                 log_dir = os.path.join(*[FLAGS.logs_dir,  size , dataset, model, scenario, id_experiment, 'model_saved'])
                 summary_dir = os.path.join(*[FLAGS.logs_dir,  size , dataset, model, scenario, id_experiment, 'summary'])
                 path_plots_results = os.path.join(*[FLAGS.logs_dir,  size , dataset, model, scenario, id_experiment, 'plots'])
                 path_csv_results = os.path.join(FLAGS.logs_dir,'xp')
-
 
                 print('log_dir',log_dir)
                 print('summary_dir',summary_dir)
@@ -526,32 +499,19 @@ class Solver:
                 variables_train,learning_rate = self.get_variables(loss_train, global_step=global_step,training=True)
                 variables_val = self.get_variables(loss_val, global_step=global_step,training=False)
 
-
-                #else:
-                #    loss = self.model_train.logprob
-                #    variables_train,learning_rate = self.get_variables(loss, global_step=global_step,training=True)
-                #    variables_val = self.get_variables(loss, global_step=global_step,training=False)
-
                 # Summary op
                 self.train_writer = tf.summary.FileWriter( os.path.join(self.config.summary_dir,'train') )
                 self.val_writer = tf.summary.FileWriter( os.path.join( self.config.summary_dir, 'validation') )
 
                 sv = tf.train.Supervisor(logdir=self.config.log_dir, save_model_secs=self.config.save_model_secs,
                                            global_step=global_step)
-
                 sv.saver.max_to_keep=3
                 
                 print('=== Creating tensorflow session ===')
                 tf.logging.set_verbosity(tf.logging.INFO)
                 
                 start = time.time()
-
                 with sv.managed_session() as sess:
-
-
-                        #print('== Initializing session ==')
-                        #sess.run(tf.global_variables_initializer())
-
                         print('=== Training model ===')
                         self.run_model(sess,variables_train, learning_rate,variables_val,global_step=global_step,sv=sv,n_epochs=self.config.n_epochs)
 
