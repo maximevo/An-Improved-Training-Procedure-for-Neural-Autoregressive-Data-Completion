@@ -4,8 +4,10 @@ Keywords can control: small dataset or large dataset, scenario 1,2,3 or 4, model
 """
 
 import sys, os
-if not (my_path in sys.path):
-    sys.path.append(my_path)
+current_path = os.path.dirname( os.path.abspath(__file__) )
+root = os.path.dirname(os.path.dirname( os.path.abspath(__file__) ))
+if not (current_path in sys.path):
+    sys.path.append(current_path)
 if not (root in sys.path):
     sys.path.append(root)
 from model import Model
@@ -62,15 +64,10 @@ for dataset in dataset_list:
         for config in config_list:
             for my_scenario in scenarios:
                 for my_model in models:
-                    xp_to_launch.append( (Model,dataset,config, Solver, my_scenario, my_model, my_size ) )
-
-                
+                    xp_to_launch.append( (Model,dataset,config, Solver, my_scenario, my_model, my_size ) )         
 print('xp_to_launch',xp_to_launch)                
 
-
 # ======== END EXPERIMENTS TO LAUNCH =============
-
-
 def load_data(dataset_name):
     datadir = root + '/data/'
     exec 'import mlpython.datasets.'+dataset_name+' as mldataset'
@@ -91,7 +88,6 @@ def load_data(dataset_name):
     valid_X = validset.data.mem_data[0]
     test_X = testset.data.mem_data[0]
     return train_X,valid_X,test_X
-
 
 def launch_one_experiment(model,dataset,config, my_solver, my_scenario, my_model, my_size):
 
@@ -125,7 +121,6 @@ def launch_one_experiment(model,dataset,config, my_solver, my_scenario, my_model
 def main(): 
     for xp_id, (model,dataset,config, solver, my_scenario, my_model, my_size) in enumerate(xp_to_launch):
         print('===== Launching experiment '+ str(xp_id+1) + " =====")
-
         model_name = str(model).split('.')[-1]
         print('model: ', model_name, my_model, 'dataset: ',dataset,'config: ',config)
         launch_one_experiment(model,dataset,config, solver, my_scenario, my_model, my_size)
